@@ -10,6 +10,25 @@ import (
 	"syscall"
 )
 
+func RedirectToAlias(ctx context.Context, args []string) (redirect bool, aliasCmd []string) {
+	if len(args) <=0 {
+		return
+	}
+
+	mgr := ctx.Value(pkg.AliasKey).(pkg.AliasManager)
+	for _, v := range mgr.List() {
+		if v.Name == args[0] {
+			redirect = true
+			aliasCmd = strings.Split(v.Command, " ")
+			if len(args) > 1 {
+				aliasCmd = append(aliasCmd, args[1:]...)
+			}
+			break
+		}
+	}
+	return
+}
+
 func RegisterAliasCommands(ctx context.Context, root *cobra.Command) {
 	//fmt.Println(ctx.Value(pkg.AliasKey))
 	mgr := ctx.Value(pkg.AliasKey).(pkg.AliasManager)
