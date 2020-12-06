@@ -10,22 +10,31 @@ import (
 )
 
 type DefaultAliasManager struct {
+	Name   string
 	Aliass map[string]string
 	Path   string
 }
 
-func GetDefaultAliasMgr() (mgr *DefaultAliasManager, err error) {
+func GetDefaultAliasMgrWithName(name string) (mgr *DefaultAliasManager, err error) {
+	if name == "" {
+		name = "ga"
+	}
+
 	var userHome string
 	if userHome, err = homedir.Dir(); err != nil {
 		panic("cannot get the home directory")
 	} else {
 		mgr = &DefaultAliasManager{
 			Aliass: map[string]string{},
-			Path:   path.Join(userHome, ".config/ga/config.yaml"),
+			Path:   path.Join(userHome, fmt.Sprintf(".config/%s/alias.yaml", name)),
 		}
 		mgr.List()
 	}
 	return
+}
+
+func GetDefaultAliasMgr() (mgr *DefaultAliasManager, err error) {
+	return GetDefaultAliasMgrWithName("")
 }
 
 func (a *DefaultAliasManager) List() map[string]string {
@@ -59,6 +68,15 @@ func (a *DefaultAliasManager) save() (err error) {
 	var data []byte
 	if data, err = yaml.Marshal(a.Aliass); err == nil {
 		err = ioutil.WriteFile(a.Path, data, 0664)
+	}
+	return
+}
+
+func (a *DefaultAliasManager) Init(alias map[string]string) (err error) {
+	for k, v := range alias {
+		if err = a.Set(k, v); err != nil {
+			return
+		}
 	}
 	return
 }
