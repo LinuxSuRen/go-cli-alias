@@ -2,11 +2,14 @@ package pkg
 
 const AliasKey = "alias-mgr"
 
-type Alias map[string]string
+type Alias struct {
+	Name    string
+	Command string
+}
 
 type AliasManager interface {
-	List() map[string]string
+	List() []Alias
 	Set(name, cmd string) error
 	Delete(name string) error
-	Init(alias map[string]string)
+	Init() error
 }
