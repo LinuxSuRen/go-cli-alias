@@ -1,9 +1,9 @@
 # Official documentation at http://goreleaser.com
-project_name: cgit
+project_name: ga
 builds:
 - env:
   - CGO_ENABLED=0
-  binary: cgit
+  binary: ga
   goarch:
     - amd64
     - arm64
@@ -15,9 +15,9 @@ builds:
     post:
       - upx "{{ .Path }}"
   ldflags:
-    - -X github.com/linuxsuren/cgit/app.version={{.Version}}
-    - -X github.com/linuxsuren/cgit/app.commit={{.ShortCommit}}
-    - -X github.com/linuxsuren/cgit/app.date={{.Date}}
+    - -X github.com/linuxsuren/ga/app.version={{.Version}}
+    - -X github.com/linuxsuren/ga/app.commit={{.ShortCommit}}
+    - -X github.com/linuxsuren/ga/app.date={{.Date}}
     - -w
 dist: release
 archives:
@@ -46,20 +46,20 @@ changelog:
     - '^test:'
 brews:
   -
-    name: cgit
+    name: ga
     tap:
       owner: linuxsuren
-      name: homebrew-cgit
+      name: homebrew-linuxsuren
     folder: Formula
-    homepage: "https://github.com/linuxsuren/cgit"
-    description: cgit is a tiny tool for Chinese developers.
+    homepage: "https://github.com/linuxsuren/go-cli-alias"
+    description: ga is a tiny tool for alias your CLI.
     dependencies:
       - name: vim
         type: optional
       - name: bash-completion
         type: optional
     test: |
-      version_output = shell_output("#{bin}/cgit version")
+      version_output = shell_output("#{bin}/ga version")
       assert_match version.to_s, version_output
     install: |
       bin.install name
@@ -67,8 +67,8 @@ brews:
       prefix.install_metafiles
 nfpms:
   - file_name_template: "{{ .Binary }}-{{.Os}}-{{.Arch}}"
-    homepage: https://github.com/linuxsuren/cgit
-    description: cgit is a tiny tool for Chinese developers.
+    homepage: https://github.com/linuxsuren/ga
+    description: ga is a tiny tool for Chinese developers.
     maintainer: rick <rick@jenkins-zh.cn>
     license: MIT
     vendor: Jenkins
