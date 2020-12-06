@@ -37,11 +37,13 @@ func RegisterAliasCommands(ctx context.Context, root *cobra.Command) {
 
 func NewRootCommand(ctx context.Context) (cmd *cobra.Command) {
 	cmd = &cobra.Command{
-		Use: "alias",
+		Use:   "alias",
+		Short: "Make your work more efficent by formula some wonderful command alias",
 	}
 
 	cmd.AddCommand(NewListCommand(ctx),
 		NewSetCommand(ctx),
-		NewDeleteCommand(ctx))
+		NewDeleteCommand(ctx),
+		NewInitCommand(ctx))
 	return
 }

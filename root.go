@@ -16,7 +16,9 @@ func NewRootCommand() (root *cobra.Command) {
 	}
 
 	var ctx context.Context
-	if defMgr, err := pkg.GetDefaultAliasMgr(); err == nil {
+	if defMgr, err := pkg.GetDefaultAliasMgrWithNameAndInitialData("", []pkg.Alias{
+		{Name: "al", Command: "alias list"},
+	}); err == nil {
 		ctx = context.WithValue(context.Background(), pkg.AliasKey, defMgr)
 
 		root.AddCommand(cmd.NewRootCommand(ctx))

@@ -16,7 +16,7 @@ type DefaultAliasManager struct {
 	InitalAliass []Alias
 }
 
-func GetDefaultAliasMgrWithName(name string) (mgr *DefaultAliasManager, err error) {
+func GetDefaultAliasMgrWithNameAndInitialData(name string, aliass []Alias) (mgr *DefaultAliasManager, err error) {
 	if name == "" {
 		name = "ga"
 	}
@@ -26,12 +26,17 @@ func GetDefaultAliasMgrWithName(name string) (mgr *DefaultAliasManager, err erro
 		panic("cannot get the home directory")
 	} else {
 		mgr = &DefaultAliasManager{
-			Aliass: []Alias{},
-			Path:   path.Join(userHome, fmt.Sprintf(".config/%s/alias.yaml", name)),
+			Aliass:       []Alias{},
+			InitalAliass: aliass,
+			Path:         path.Join(userHome, fmt.Sprintf(".config/%s/alias.yaml", name)),
 		}
 		mgr.List()
 	}
 	return
+}
+
+func GetDefaultAliasMgrWithName(name string) (mgr *DefaultAliasManager, err error) {
+	return GetDefaultAliasMgrWithNameAndInitialData(name, nil)
 }
 
 func GetDefaultAliasMgr() (mgr *DefaultAliasManager, err error) {
