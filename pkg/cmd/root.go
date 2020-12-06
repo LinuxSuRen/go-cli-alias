@@ -11,7 +11,7 @@ import (
 )
 
 func RedirectToAlias(ctx context.Context, args []string) (redirect bool, aliasCmd []string) {
-	if len(args) <=0 {
+	if len(args) <= 0 {
 		return
 	}
 
@@ -33,6 +33,8 @@ func RegisterAliasCommands(ctx context.Context, root *cobra.Command) {
 	//fmt.Println(ctx.Value(pkg.AliasKey))
 	mgr := ctx.Value(pkg.AliasKey).(pkg.AliasManager)
 	//fmt.Println(len(mgr.List()), "==")
+
+	aliasNames := []string{}
 	for _, v := range mgr.List() {
 		//fmt.Println("register", k, v)
 		root.AddCommand(&cobra.Command{
@@ -51,6 +53,10 @@ func RegisterAliasCommands(ctx context.Context, root *cobra.Command) {
 				return
 			},
 		})
+		aliasNames = append(aliasNames, v.Name)
+	}
+	root.ValidArgsFunction = func(cmd *cobra.Command, args []string, toComplete string) (i []string, directive cobra.ShellCompDirective) {
+		return aliasNames, cobra.ShellCompDirectiveNoFileComp
 	}
 }
 
