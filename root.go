@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	ext "github.com/linuxsuren/cobra-extension"
 	"github.com/linuxsuren/go-cli-alias/pkg"
 	"github.com/linuxsuren/go-cli-alias/pkg/cmd"
 	"github.com/spf13/cobra"
@@ -24,6 +25,8 @@ func NewRootCommand() (root *cobra.Command) {
 		root.AddCommand(cmd.NewRootCommand(ctx))
 
 		cmd.RegisterAliasCommands(ctx, root)
+
+		root.AddCommand(ext.NewCompletionCmd(root))
 	} else {
 		log.Println(fmt.Errorf("cannot get default alias manager, error: %v", err))
 	}
