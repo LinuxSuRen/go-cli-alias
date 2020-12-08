@@ -2,8 +2,8 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/ghodss/yaml"
 	"github.com/mitchellh/go-homedir"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
