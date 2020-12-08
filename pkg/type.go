@@ -3,8 +3,8 @@ package pkg
 const AliasKey = "alias-mgr"
 
 type Alias struct {
-	Name    string
-	Command string
+	Name    string `yaml:"name"`
+	Command string `yaml:"command"`
 }
 
 type AliasManager interface {
