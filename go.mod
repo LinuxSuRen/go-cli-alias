@@ -8,4 +8,5 @@ require (
 	github.com/linuxsuren/go-cli-plugin v0.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.1.1
+	golang.org/x/text v0.3.4 // indirect
 )
