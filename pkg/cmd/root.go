@@ -22,9 +22,19 @@ func DefaultRunE(targetCLI string) func(cmd *cobra.Command, args []string) (err 
 	return func(cmd *cobra.Command, args []string) (err error) {
 		env := os.Environ()
 
+		var targetArgs []string
+		targetCLIArray := strings.Split(targetCLI, " ")
+		if len(targetCLIArray) > 1 {
+			targetCLI = targetCLIArray[0]
+			targetArgs = targetCLIArray
+			targetArgs = append(targetArgs, args...)
+		} else{
+			targetArgs = args
+		}
+
 		var gitBinary string
 		if gitBinary, err = exec.LookPath(targetCLI); err == nil {
-			syscall.Exec(gitBinary, append([]string{targetCLI}, args...), env)
+			err = syscall.Exec(gitBinary, append([]string{targetCLI}, targetArgs...), env)
 		}
 		return
 	}
