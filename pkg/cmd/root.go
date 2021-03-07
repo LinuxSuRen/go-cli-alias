@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/linuxsuren/go-cli-alias/pkg"
 	"github.com/spf13/cobra"
@@ -120,8 +121,15 @@ func AddAliasCmd(cmd *cobra.Command, defaultAlias []pkg.Alias) {
 }
 
 func Execute(cmd *cobra.Command, target string, aliasList []pkg.Alias, preHook func([]string)) {
-	//cmd.SilenceErrors = true
-	err := cmd.Execute()
+	cmd.SilenceErrors = true
+	var err error
+	// this is very trick way, looking to improve it
+	if len(strings.Split(target, " ")) > 1 {
+		err = errors.New("unknown command")
+	} else {
+		err = cmd.Execute()
+	}
+
 	if err != nil && strings.Contains(err.Error(), "unknown command") {
 		args := os.Args[1:]
 		var defMgr *pkg.DefaultAliasManager
