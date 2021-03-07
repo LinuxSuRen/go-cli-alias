@@ -26,7 +26,7 @@ func DefaultRunE(targetCLI string) func(cmd *cobra.Command, args []string) (err 
 		targetCLIArray := strings.Split(targetCLI, " ")
 		if len(targetCLIArray) > 1 {
 			targetCLI = targetCLIArray[0]
-			targetArgs = targetCLIArray
+			targetArgs = targetCLIArray[1:]
 			targetArgs = append(targetArgs, args...)
 		} else{
 			targetArgs = args
@@ -120,18 +120,27 @@ func AddAliasCmd(cmd *cobra.Command, defaultAlias []pkg.Alias) {
 }
 
 func Execute(cmd *cobra.Command, target string, aliasList []pkg.Alias, preHook func([]string)) {
-	cmd.SilenceErrors = true
+	//cmd.SilenceErrors = true
 	err := cmd.Execute()
 	if err != nil && strings.Contains(err.Error(), "unknown command") {
 		args := os.Args[1:]
 		var defMgr *pkg.DefaultAliasManager
 		if defMgr, err = pkg.GetDefaultAliasMgrWithNameAndInitialData(cmd.Name(), aliasList); err == nil {
 			ctx := context.WithValue(context.Background(), pkg.AliasKey, defMgr)
-			var gitBinary string
-			var targetCmd []string
+			var targetBinary string
+			var targetArgs []string
+			var targetCmd string
 			env := os.Environ()
 
-			if gitBinary, err = exec.LookPath(target); err != nil {
+			targetCmdArray := strings.Split(target, " ")
+			if len(targetCmdArray) > 1 {
+				targetCmd = targetCmdArray[0]
+				targetArgs = targetCmdArray[1:]
+			} else {
+				targetCmd = targetCmdArray[0]
+			}
+
+			if targetBinary, err = exec.LookPath(targetCmd); err != nil {
 				panic(fmt.Sprintf("cannot find %s", target))
 			}
 
@@ -143,8 +152,8 @@ func Execute(cmd *cobra.Command, target string, aliasList []pkg.Alias, preHook f
 				preHook(args)
 			}
 
-			targetCmd = append([]string{target}, args...)
-			_ = syscall.Exec(gitBinary, targetCmd, env) // ignore the errors due to we've no power to deal with it
+			targetArgs = append(targetCmdArray, args...)
+			_ = syscall.Exec(targetBinary, targetArgs, env) // ignore the errors due to we've no power to deal with it
 		} else {
 			err = fmt.Errorf("cannot get default alias manager, error: %v", err)
 		}
