@@ -130,40 +130,44 @@ func Execute(cmd *cobra.Command, target string, aliasList []pkg.Alias, preHook f
 		err = cmd.Execute()
 	}
 
-	if err != nil && strings.Contains(err.Error(), "unknown command") {
-		args := os.Args[1:]
-		var defMgr *pkg.DefaultAliasManager
-		if defMgr, err = pkg.GetDefaultAliasMgrWithNameAndInitialData(cmd.Name(), aliasList); err == nil {
-			ctx := context.WithValue(context.Background(), pkg.AliasKey, defMgr)
-			var targetBinary string
-			var targetArgs []string
-			var targetCmd string
-			env := os.Environ()
+	if err != nil {
+		if strings.Contains(err.Error(), "unknown command") {
+			args := os.Args[1:]
+			var defMgr *pkg.DefaultAliasManager
+			if defMgr, err = pkg.GetDefaultAliasMgrWithNameAndInitialData(cmd.Name(), aliasList); err == nil {
+				ctx := context.WithValue(context.Background(), pkg.AliasKey, defMgr)
+				var targetBinary string
+				var targetArgs []string
+				var targetCmd string
+				env := os.Environ()
 
-			targetCmdArray := strings.Split(target, " ")
-			if len(targetCmdArray) > 1 {
-				targetCmd = targetCmdArray[0]
-				targetArgs = targetCmdArray[1:]
+				targetCmdArray := strings.Split(target, " ")
+				if len(targetCmdArray) > 1 {
+					targetCmd = targetCmdArray[0]
+					targetArgs = targetCmdArray[1:]
+				} else {
+					targetCmd = targetCmdArray[0]
+				}
+
+				if targetBinary, err = exec.LookPath(targetCmd); err != nil {
+					panic(fmt.Sprintf("cannot find %s", target))
+				}
+
+				if ok, redirect := RedirectToAlias(ctx, args); ok {
+					args = redirect
+				}
+
+				if preHook != nil {
+					preHook(args)
+				}
+
+				targetArgs = append(targetCmdArray, args...)
+				_ = syscall.Exec(targetBinary, targetArgs, env) // ignore the errors due to we've no power to deal with it
 			} else {
-				targetCmd = targetCmdArray[0]
+				err = fmt.Errorf("cannot get default alias manager, error: %v", err)
 			}
-
-			if targetBinary, err = exec.LookPath(targetCmd); err != nil {
-				panic(fmt.Sprintf("cannot find %s", target))
-			}
-
-			if ok, redirect := RedirectToAlias(ctx, args); ok {
-				args = redirect
-			}
-
-			if preHook != nil {
-				preHook(args)
-			}
-
-			targetArgs = append(targetCmdArray, args...)
-			_ = syscall.Exec(targetBinary, targetArgs, env) // ignore the errors due to we've no power to deal with it
 		} else {
-			err = fmt.Errorf("cannot get default alias manager, error: %v", err)
+			cmd.PrintErrln(err)
 		}
 	}
 }
