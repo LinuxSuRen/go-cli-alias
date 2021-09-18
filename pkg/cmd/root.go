@@ -14,7 +14,7 @@ import (
 
 func CreateDefaultCmd(target, alias string) *cobra.Command {
 	return &cobra.Command{
-		Use: alias,
+		Use:  alias,
 		RunE: DefaultRunE(target),
 	}
 }
@@ -29,7 +29,7 @@ func DefaultRunE(targetCLI string) func(cmd *cobra.Command, args []string) (err 
 			targetCLI = targetCLIArray[0]
 			targetArgs = targetCLIArray[1:]
 			targetArgs = append(targetArgs, args...)
-		} else{
+		} else {
 			targetArgs = args
 		}
 
@@ -121,11 +121,17 @@ func AddAliasCmd(cmd *cobra.Command, defaultAlias []pkg.Alias) {
 }
 
 func Execute(cmd *cobra.Command, target string, aliasList []pkg.Alias, preHook func([]string)) {
+	ExecuteContext(cmd, context.TODO(), target, aliasList, preHook)
+}
+
+func ExecuteContext(cmd *cobra.Command, ctx context.Context, target string, aliasList []pkg.Alias, preHook func([]string)) {
 	cmd.SilenceErrors = true
 	var err error
 	// this is very trick way, looking to improve it
 	if len(strings.Split(target, " ")) > 1 {
 		err = errors.New("unknown command")
+	} else if ctx != nil {
+		err = cmd.ExecuteContext(ctx)
 	} else {
 		err = cmd.Execute()
 	}
