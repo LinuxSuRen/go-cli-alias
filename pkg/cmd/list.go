@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"context"
-	ext "github.com/linuxsuren/cobra-extension"
+	ext "github.com/linuxsuren/cobra-extension/pkg"
 	"github.com/linuxsuren/go-cli-alias/pkg"
 	"github.com/spf13/cobra"
 )
