@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	ext "github.com/linuxsuren/cobra-extension"
+	ext "github.com/linuxsuren/cobra-extension/pkg"
 	"github.com/linuxsuren/go-cli-alias/pkg"
 	"github.com/linuxsuren/go-cli-alias/pkg/cmd"
 	"github.com/spf13/cobra"
