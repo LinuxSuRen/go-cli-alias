@@ -124,7 +124,7 @@ func Execute(cmd *cobra.Command, target string, aliasList []pkg.Alias, preHook f
 	ExecuteContext(cmd, context.TODO(), target, aliasList, preHook)
 }
 
-func ExecuteContext(cmd *cobra.Command, ctx context.Context, target string, aliasList []pkg.Alias, preHook func([]string)) {
+func ExecuteContextV2(cmd *cobra.Command, ctx context.Context, target string, aliasList []pkg.Alias, preHook func([]string)[]string) {
 	cmd.SilenceErrors = true
 	var err error
 	// this is very trick way, looking to improve it
@@ -164,7 +164,7 @@ func ExecuteContext(cmd *cobra.Command, ctx context.Context, target string, alia
 				}
 
 				if preHook != nil {
-					preHook(args)
+					args = preHook(args)
 				}
 
 				targetArgs = append(targetCmdArray, args...)
@@ -176,4 +176,13 @@ func ExecuteContext(cmd *cobra.Command, ctx context.Context, target string, alia
 			cmd.PrintErrln(err)
 		}
 	}
+}
+
+func ExecuteContext(cmd *cobra.Command, ctx context.Context, target string, aliasList []pkg.Alias, preHook func([]string)) {
+	ExecuteContextV2(cmd, ctx, target, aliasList, func(i []string) []string {
+		if preHook != nil {
+			preHook(i)
+		}
+		return i
+	})
 }
