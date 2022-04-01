@@ -124,7 +124,7 @@ func Execute(cmd *cobra.Command, target string, aliasList []pkg.Alias, preHook f
 	ExecuteContext(cmd, context.TODO(), target, aliasList, preHook)
 }
 
-func ExecuteContextV2(cmd *cobra.Command, ctx context.Context, target string, aliasList []pkg.Alias, preHook func([]string)[]string) {
+func ExecuteContextV2(cmd *cobra.Command, ctx context.Context, target string, aliasList []pkg.Alias, preHook func([]string) []string) {
 	cmd.SilenceErrors = true
 	var err error
 	// this is very trick way, looking to improve it
@@ -174,6 +174,7 @@ func ExecuteContextV2(cmd *cobra.Command, ctx context.Context, target string, al
 			}
 		} else {
 			cmd.PrintErrln(err)
+			os.Exit(1)
 		}
 	}
 }
